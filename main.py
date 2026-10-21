@@ -1,4 +1,6 @@
 from pybaseball import statcast_batter
+import matplotlib.pyplot as plt
+from pathlib import Path
 
 #--------------------------------------------------------#
 #                     AARON JUDGE DATA                   #
@@ -50,3 +52,40 @@ print("\n--- Hitting Statistics ---")
 print(f"Average exit velocity: {avg_exit_velocity:.2f} mph")
 print(f"Hard-hit rate: {hard_hit_rate:.2f}%")
 print(f"Tracked batted balls: {len(batted_balls)}")
+
+#--------------------------------------------------------#
+#                GRAPHING EXIT VELOCITY                  #
+#--------------------------------------------------------#
+
+# Create a histogram of exit velocities
+plt.figure(figsize=(10, 6))
+
+plt.hist(
+    batted_balls["launch_speed"],
+    bins=20,
+    edgecolor="black"
+)
+
+# Mark the hard-hit threshold
+plt.axvline(
+    x=95,
+    color="red",
+    linestyle="--",
+    label="Hard-hit threshold (95 mph)"
+)
+
+plt.title("Aaron Judge - Exit Velocity Distribution (April 2025)")
+plt.xlabel("Exit Velocity (mph)")
+plt.ylabel("Number of Recorded Contacts")
+plt.legend()
+plt.grid(axis="y", alpha=0.3)
+
+plt.tight_layout()
+
+# Create the graphs folder if it doesn't exist
+Path("ExitVelocityGraphs").mkdir(exist_ok=True)
+
+# Save the graph inside the folder
+plt.savefig("ExitVelocityGraphs/exit_velocity_distribution.png", dpi=300)
+
+plt.show()
