@@ -33,8 +33,11 @@ data.to_csv("judge_statcast.csv", index=False)
 #               AARON JUDGE EXIT VELOCITY                #
 #--------------------------------------------------------#
 
-# Only keep pitches with recorded exit velocities
-batted_balls = data.dropna(subset=["launch_speed"])
+# Filter for batted-ball events with recorded exit velocity
+batted_balls = data[
+    (data["type"] == "X") &
+    (data["launch_speed"].notna())
+].copy()
 
 # Calculate average exit velocity
 avg_exit_velocity = batted_balls["launch_speed"].mean()
