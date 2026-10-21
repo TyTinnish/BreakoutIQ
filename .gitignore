@@ -1,0 +1,20 @@
+# Python environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+.env.*
+
+# Mac files
+.DS_Store
+
+# Local datasets and models
+data/
+*.csv
+*.parquet
+*.pkl
