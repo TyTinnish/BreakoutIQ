@@ -28,14 +28,71 @@ player_stats["hard_hit_rate"] *= 100
 # Round statistics for readability
 player_stats = player_stats.round(2)
 
-# Display the top 10 players by hard-hit rate
-print("\nTop 10 Players by Hard-Hit Rate:")
+#--------------------------------------------------------#
+#                    STRIKEOUT RATE                      #
+#--------------------------------------------------------#
+
+# Keep the final pitch of each completed plate appearance
+plate_appearances = data[
+    data["events"].notna()
+].copy()
+
+# Identify strikeouts and walks
+plate_appearances["strikeout"] = (
+    plate_appearances["events"].isin([
+        "strikeout",
+        "strikeout_double_play"
+    ])
+).astype(int)
+
+plate_appearances["walk"] = (
+    plate_appearances["events"].isin([
+        "walk",
+        "intent_walk"
+    ])
+).astype(int)
+
+# Calculate plate discipline statistics
+discipline_stats = plate_appearances.groupby("batter").agg(
+    plate_appearances=("events", "count"),
+    strikeout_rate=("strikeout", "mean"),
+    walk_rate=("walk", "mean")
+).reset_index()
+
+# Convert rates into percentages
+discipline_stats["strikeout_rate"] *= 100
+discipline_stats["walk_rate"] *= 100
+
+# Combine contact statistics with plate discipline statistics
+player_stats = player_stats.merge(
+    discipline_stats,
+    on="batter",
+    how="left"
+)
+
+# Round the final statistics
+player_stats = player_stats.round(2)
+
+#--------------------------------------------------------#
+#         HARD-HIT RATE AMONG QUALIFIED HITTERS          #
+#--------------------------------------------------------#
+
+# Only rank players with at least 10 batted balls
+qualified_players = player_stats[
+    player_stats["batted_balls"] >= 10
+]
+
+print("\nTop 10 Qualified Players by Hard-Hit Rate:")
 print(
-    player_stats.sort_values(
+    qualified_players.sort_values(
         "hard_hit_rate",
         ascending=False
     ).head(10).to_string(index=False)
 )
+
+#--------------------------------------------------------#
+#                       SAVE DATA                        #
+#--------------------------------------------------------#
 
 # Save the processed dataset
 Path("data").mkdir(exist_ok=True)
