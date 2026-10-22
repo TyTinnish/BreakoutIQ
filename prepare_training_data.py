@@ -6,7 +6,14 @@ import pandas as pd
 #                    CONFIGURATION
 # --------------------------------------------------------
 
-SEASON = 2025
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--season", type=int, default=2025)
+args = parser.parse_args()
+
+SEASON = args.season
+
 WINDOW_SIZE = 30
 STEP_SIZE = 10
 MIN_PLATE_APPEARANCES = 75

@@ -6,9 +6,21 @@ from pybaseball import statcast, cache
 # Enable caching for Statcast requests
 cache.enable()
 
-SEASON = 2025
-START_DATE = date(2025, 3, 27)
-END_DATE = date(2025, 9, 28)
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--season", type=int, default=2025)
+args = parser.parse_args()
+
+SEASON = args.season
+
+SEASON_DATES = {
+    2023: (date(2023, 3, 30), date(2023, 10, 1)),
+    2024: (date(2024, 3, 20), date(2024, 9, 30)),
+    2025: (date(2025, 3, 27), date(2025, 9, 28)),
+}
+
+START_DATE, END_DATE = SEASON_DATES[SEASON]
 
 # Store weekly data in separate files
 DATA_DIR = Path(f"data/statcast_{SEASON}")
