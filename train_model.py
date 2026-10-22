@@ -125,3 +125,40 @@ print(
         ascending=False
     ).to_string(index=False)
 )
+
+# --------------------------------------------------------
+#             COMPARE AGAINST OPS-ONLY MODEL
+# --------------------------------------------------------
+
+# Build a simpler model using only recent OPS
+baseline_model = make_pipeline(
+    StandardScaler(),
+    LogisticRegression(max_iter=1000, random_state=42)
+)
+
+# Train on the same players as the full model
+baseline_model.fit(
+    X_train[["recent_ops"]],
+    y_train
+)
+
+# Predict using the OPS-only model
+baseline_probs = baseline_model.predict_proba(
+    X_test[["recent_ops"]]
+)[:, 1]
+
+baseline_preds = baseline_model.predict(
+    X_test[["recent_ops"]]
+)
+
+print("\n--- MODEL COMPARISON ---")
+
+print("Full BreakoutIQ model:")
+print(f"Accuracy: {accuracy_score(y_test, predictions):.3f}")
+print(f"ROC-AUC: {roc_auc_score(y_test, probabilities):.3f}")
+print(f"Brier: {brier_score_loss(y_test, probabilities):.3f}")
+
+print("\nOPS-only model:")
+print(f"Accuracy: {accuracy_score(y_test, baseline_preds):.3f}")
+print(f"ROC-AUC: {roc_auc_score(y_test, baseline_probs):.3f}")
+print(f"Brier: {brier_score_loss(y_test, baseline_probs):.3f}")
